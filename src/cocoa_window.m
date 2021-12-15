@@ -770,6 +770,7 @@ shouldPopUpDocumentPathMenu:(NSMenu *)menu; {
 
 @end
 
+BOOL hasSetAppIcon = false;
 
 // Create the Cocoa window
 //
@@ -777,6 +778,17 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                                    const _GLFWwndconfig* wndconfig,
                                    const _GLFWfbconfig* fbconfig)
 {
+    if (!hasSetAppIcon)
+    {
+        hasSetAppIcon = true;
+        NSString* iconPath = [[[NSProcessInfo processInfo] environment] objectForKey: @"HAMARB123_CUSTOM_ICON"];
+        if (iconPath != nil)
+        {
+            NSImage* image = [[NSImage alloc] initWithContentsOfFile: iconPath];
+            [NSApplication sharedApplication].applicationIconImage = image;
+        }
+    }
+
     window->ns.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
     if (window->ns.delegate == nil)
     {
