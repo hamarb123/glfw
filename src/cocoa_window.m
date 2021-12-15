@@ -236,6 +236,11 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     return self;
 }
 
+- (BOOL) window:(NSWindow *)window
+shouldPopUpDocumentPathMenu:(NSMenu *)menu; {
+    return NO;
+}
+
 - (BOOL)windowShouldClose:(id)sender
 {
     _glfwInputWindowCloseRequest(window);
@@ -623,7 +628,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     }
 
     if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0)
-        _glfwInputScroll(window, deltaX, deltaY);
+        _glfwInputScroll(window, deltaX, deltaX + deltaY);
 }
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
@@ -822,6 +827,9 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create window");
         return GLFW_FALSE;
     }
+    [window->ns.object setRepresentedURL:[NSURL URLWithString:@"Minecraft"]];
+    // Set out custom icon
+    [[window->ns.object standardWindowButton:NSWindowDocumentIconButton] setImage:[NSImage imageNamed:@"minecraft"]];
 
     if (window->monitor)
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
@@ -992,8 +1000,7 @@ void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title)
 void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                              int count, const GLFWimage* images)
 {
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Cocoa: Regular windows do not have icons on macOS");
+
 }
 
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)
